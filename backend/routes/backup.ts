@@ -30,10 +30,11 @@ router.get('/backups', async (req, res) => {
   const label = (req.query.label as string) || undefined
   const prefix = label ? `/${label}` : '/'
 
-  const items = await backups.list(prefix, { recursive: true })
+  const pages = await backups.list(prefix, { recursive: true })
   const results = []
 
-  for (const item of items) {
+  for await (const items of pages) {
+    for (const item of items) {
     if (!item.endsWith('.tar.gz')) continue
     const stat = await backups.stat(item)
     if (!stat) continue
@@ -50,6 +51,7 @@ router.get('/backups', async (req, res) => {
       lastModified: stat.lastModified,
       metadata: stat.metadata
     })
+    }
   }
 
   res.json({ backups: results })
