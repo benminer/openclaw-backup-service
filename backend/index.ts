@@ -1,8 +1,8 @@
 import { http } from '@ampt/sdk'
 import express from 'express'
 import morgan from 'morgan'
-import { authMiddleware } from './middleware/auth.js'
-import backupRoutes from './routes/backup.js'
+import { authMiddleware } from '@/middleware/auth'
+import backupRoutes from '@/routes/backup'
 
 const app = express()
 
