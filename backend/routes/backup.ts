@@ -37,6 +37,42 @@ readRoutes.get('/backups', async (req, res) => {
   res.json({ backups: results })
 })
 
+readRoutes.get('/stats', async (req, res) => {
+  const pages = await backups.list('/', { recursive: true })
+  let totalBackups = 0
+  let totalSize = 0
+  let latestBackup: string | null = null
+  let latestDate: Date | null = null
+  const labels = new Set<string>()
+
+  for await (const page of pages) {
+    for (const item of page) {
+      if (!item.endsWith('.tar.gz')) continue
+      const stat = await backups.stat(item)
+      if (!stat) continue
+
+      totalBackups++
+      totalSize += stat.size || 0
+      labels.add(item.replace(/^\//, '').split('/')[0])
+
+      const modified = new Date(stat.lastModified)
+      if (!latestDate || modified > latestDate) {
+        latestDate = modified
+        latestBackup = item
+      }
+    }
+  }
+
+  res.json({
+    totalBackups,
+    totalSize,
+    totalSizeHuman: `${(totalSize / 1024 / 1024).toFixed(2)} MB`,
+    labels: [...labels],
+    latestBackup,
+    latestDate: latestDate?.toISOString() || null
+  })
+})
+
 readRoutes.get('/restore/:label/:timestamp', async (req, res) => {
   const { label, timestamp } = req.params
   const key = `/${label}/${timestamp}.tar.gz`
@@ -54,10 +90,36 @@ readRoutes.get('/restore/:label/:timestamp', async (req, res) => {
 // Write routes -- always require API key
 export const writeRoutes = Router()
 
+const DEFAULT_MAX_BACKUPS = 10
+
+const pruneOldBackups = async (label: string, maxKeep: number) => {
+  const prefix = `/${label}`
+  const pages = await backups.list(prefix, { recursive: true })
+  const items: { key: string; lastModified: Date }[] = []
+
+  for await (const page of pages) {
+    for (const item of page) {
+      if (!item.endsWith('.tar.gz')) continue
+      const stat = await backups.stat(item)
+      if (stat) items.push({ key: item, lastModified: new Date(stat.lastModified) })
+    }
+  }
+
+  items.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime())
+
+  const toDelete = items.slice(maxKeep)
+  for (const item of toDelete) {
+    await backups.remove(item.key)
+  }
+
+  return toDelete.length
+}
+
 writeRoutes.post('/backup', async (req, res) => {
   const label = (req.query.label as string) || 'default'
   const fileCount = req.query.fileCount ? Number(req.query.fileCount) : 0
   const totalSize = req.query.totalSize ? Number(req.query.totalSize) : 0
+  const maxKeep = req.query.maxKeep ? Number(req.query.maxKeep) : DEFAULT_MAX_BACKUPS
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
   const key = `/${label}/${timestamp}.tar.gz`
 
@@ -71,7 +133,17 @@ writeRoutes.post('/backup', async (req, res) => {
     type: 'application/gzip'
   })
 
-  res.json({ id: `${label}/${timestamp}`, key, uploadUrl })
+  // Auto-prune old backups after creating a new one
+  const pruned = await pruneOldBackups(label, maxKeep)
+
+  res.json({ id: `${label}/${timestamp}`, key, uploadUrl, pruned })
+})
+
+writeRoutes.post('/backup/prune', async (req, res) => {
+  const label = (req.query.label as string) || 'default'
+  const maxKeep = req.query.maxKeep ? Number(req.query.maxKeep) : DEFAULT_MAX_BACKUPS
+  const pruned = await pruneOldBackups(label, maxKeep)
+  res.json({ pruned, label, maxKeep })
 })
 
 writeRoutes.delete('/backup/:label/:timestamp', async (req, res) => {

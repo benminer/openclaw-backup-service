@@ -1,7 +1,7 @@
 {
-  "name": "openclaw-backup-service",
+  "name": "openclaw-agent-dashboard",
   "version": "1.0.0",
-  "description": "Backup and restore OpenClaw agent workspace files via REST API",
+  "description": "OpenClaw Agent Dashboard — backup and restore agent workspace files via REST API",
   "type": "module",
   "main": "backend/index.ts",
   "ampt": {

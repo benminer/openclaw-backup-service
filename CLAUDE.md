@@ -1,6 +1,6 @@
-# OpenClaw Backup Service - Developer Guide
+# OpenClaw Agent Dashboard - Developer Guide
 
-A REST API running on Ampt that backs up and restores OpenClaw agent workspace files to @ampt/storage (S3 wrapper). Enables migrating an agent to a new server by pulling down backups.
+A REST API and web dashboard running on Ampt that backs up and restores OpenClaw agent workspace files to @ampt/storage (S3 wrapper). Enables migrating an agent to a new server by pulling down backups.
 
 ## Architecture & Tech Stack
 
@@ -31,10 +31,12 @@ No frontend -- API only.
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | GET | /api/health | No | Health check |
-| POST | /api/backup | Yes | Get presigned upload URL |
-| GET | /api/backups | Yes | List all backups |
-| GET | /api/restore/:label/:timestamp | Yes | Get presigned download URL |
-| DELETE | /api/backup/:label/:timestamp | Yes | Delete a backup |
+| GET | /api/stats | Read | Backup stats (totals, labels, latest) |
+| POST | /api/backup | Write | Get presigned upload URL (auto-prunes old backups) |
+| POST | /api/backup/prune | Write | Manually prune old backups for a label |
+| GET | /api/backups | Read | List all backups |
+| GET | /api/restore/:label/:timestamp | Read | Get presigned download URL |
+| DELETE | /api/backup/:label/:timestamp | Write | Delete a backup |
 
 Presigned URLs are used for upload/download to avoid the 6MB API payload limit.
 
@@ -45,7 +47,7 @@ Presigned URLs are used for upload/download to avoid the 6MB API payload limit.
 **CRITICAL**: You must source the .env file first to set your AMPT_API_KEY:
 
 ```bash
-cd ~/jarvis-apps/openclaw-backup-service
+cd ~/eva-apps/openclaw-agent-dashboard
 source .env
 ampt
 ```

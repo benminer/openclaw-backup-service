@@ -1,6 +1,6 @@
-# openclaw-backup-service
+# openclaw-agent-dashboard
 
-REST API for backing up and restoring OpenClaw agent workspace files to Ampt storage.
+OpenClaw Agent Dashboard — REST API and web UI for backing up and restoring OpenClaw agent workspace files via Ampt storage.
 
 ## Endpoints
 
