@@ -11,9 +11,10 @@ export const formatDate = (iso: string): string => {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-    hour: '2-digit',
+    hour: 'numeric',
     minute: '2-digit',
-    hour12: false
+    hour12: true,
+    timeZoneName: 'short'
   })
 }
 

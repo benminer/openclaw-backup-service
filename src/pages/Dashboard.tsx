@@ -51,7 +51,7 @@ export function Dashboard() {
           <p className="text-sm text-gray-500 mt-1">
             Workspace snapshots · auto-refreshes every 30s
             <span className="text-gray-600 ml-2">
-              last: {lastRefresh.toLocaleTimeString('en-US', { hour12: false })}
+              last: {lastRefresh.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZoneName: 'short' })}
             </span>
           </p>
         </div>
