@@ -31,6 +31,7 @@ export function Layout() {
             </Link>
             <nav className="flex items-center gap-1">
               <NavLink to="/" label="Dashboard" />
+              <NavLink to="/activity" label="Activity" />
               <NavLink to="/blog" label="Blog" />
             </nav>
           </div>

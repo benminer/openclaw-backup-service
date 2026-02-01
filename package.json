@@ -35,6 +35,7 @@
     ]
   },
   "dependencies": {
+    "@ampt/data": "^1.0.27",
     "@ampt/sdk": "file:ampt-sdk-1.0.20.tgz",
     "express": "^5.2.1",
     "morgan": "^1.10.1",
