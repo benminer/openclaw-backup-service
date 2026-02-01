@@ -174,6 +174,10 @@ ampt deploy          # Deploy to default stage
 ampt deploy --name prod  # Deploy to production
 ```
 
+### Auto-Deploy Policy
+
+**Deploy to prod freely** after code review is complete and all feedback has been addressed. No need to ask -- just ship it.
+
 ### Linting & Formatting
 
 ```bash
