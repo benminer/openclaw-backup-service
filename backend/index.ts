@@ -10,6 +10,18 @@ const app = express()
 
 app.use(morgan('short'))
 
+// SPA fallback handler
+const spaFallback: express.RequestHandler = (_req, res, next) => {
+  const indexPath = path.resolve('static/index.html')
+  console.log('[SPA] serving:', indexPath, 'cwd:', process.cwd())
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('[SPA] sendFile failed:', err)
+      next(err)
+    }
+  })
+}
+
 // Health check (no auth)
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
@@ -24,16 +36,8 @@ app.use('/api', authMiddleware, writeRoutes)
 app.use('/api', authMiddleware, blogWriteRoutes)
 
 // SPA fallback -- serve index.html for non-API routes so React Router works
-app.use((req, res, next) => {
-  if (req.method !== 'GET' || req.path.startsWith('/api')) return next()
-  const indexPath = path.resolve('static/index.html')
-  console.log('[SPA] fallback for:', req.path, '→', indexPath, 'cwd:', process.cwd())
-  res.sendFile(indexPath, (err) => {
-    if (err) {
-      console.error('[SPA] sendFile error:', err)
-      next(err)
-    }
-  })
-})
+// Using explicit route patterns since Express 5 changed wildcard handling
+app.get('/blog', spaFallback)
+app.get('/blog/{slug}', spaFallback)
 
 http.node.use(app)
