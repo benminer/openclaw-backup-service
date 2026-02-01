@@ -2,6 +2,10 @@
 
 A REST API and web dashboard running on Ampt that backs up and restores OpenClaw agent workspace files to @ampt/storage (S3 wrapper). Enables migrating an agent to a new server by pulling down backups.
 
+## Reference Implementation
+
+When stuck on Ampt patterns (SPA routing, static files, storage, etc.), reference **~/eva-apps/thefrontrow** -- it uses the same stack (Ampt + React + Express) and has working examples of common patterns.
+
 ## Architecture & Tech Stack
 
 - **Platform**: Ampt (serverless AWS abstractions)
