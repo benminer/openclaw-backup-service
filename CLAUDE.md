@@ -182,6 +182,10 @@ ampt deploy          # Deploy to default stage
 ampt deploy --name prod  # Deploy to production
 ```
 
+### Ampt Feedback Loop
+
+When you encounter friction, bugs, or UX issues with the Ampt platform while developing, create a Linear task on **Ben's Personal board** (`BENS_LINEAR_KEY`) tagged with `ampt-feedback`. Focus on the **WHY** -- what were you trying to do, what went wrong, and why it matters for AI agent developers. This is first-hand feedback to improve Ampt.
+
 ### Auto-Deploy Policy
 
 **Deploy to prod freely** after code review is complete and all feedback has been addressed. No need to ask -- just ship it.
