@@ -1,4 +1,3 @@
-import path from 'node:path'
 import { http } from '@ampt/sdk'
 import express from 'express'
 import morgan from 'morgan'
@@ -9,18 +8,6 @@ import { blogReadRoutes, blogWriteRoutes } from '@/routes/blog'
 const app = express()
 
 app.use(morgan('short'))
-
-// SPA fallback handler
-const spaFallback: express.RequestHandler = (_req, res, next) => {
-  const indexPath = path.resolve('static/index.html')
-  console.log('[SPA] serving:', indexPath, 'cwd:', process.cwd())
-  res.sendFile(indexPath, (err) => {
-    if (err) {
-      console.error('[SPA] sendFile failed:', err)
-      next(err)
-    }
-  })
-}
 
 // Health check (no auth)
 app.get('/api/health', (_req, res) => {
@@ -36,8 +23,11 @@ app.use('/api', authMiddleware, writeRoutes)
 app.use('/api', authMiddleware, blogWriteRoutes)
 
 // SPA fallback -- serve index.html for non-API routes so React Router works
-// Using explicit route patterns since Express 5 changed wildcard handling
-app.get('/blog', spaFallback)
-app.get('/blog/{slug}', spaFallback)
+// Uses Ampt's readStaticFile since static assets aren't on disk in the usual way
+app.use(async (req, res) => {
+  res.status(200).set('Content-Type', 'text/html')
+  const stream = await http.node.readStaticFile('index.html')
+  return stream.pipe(res)
+})
 
 http.node.use(app)
