@@ -51,7 +51,7 @@ Presigned URLs are used for upload/download to avoid the 6MB API payload limit.
 **CRITICAL**: You must source the .env file first to set your AMPT_API_KEY:
 
 ```bash
-cd ~/eva-apps/openclaw-agent-dashboard
+cd ~/eva-apps/projects/openclaw-agent-dashboard
 source .env
 ampt
 ```
