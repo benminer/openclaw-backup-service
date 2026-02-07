@@ -5,6 +5,7 @@ import { authMiddleware, sameOriginOrAuth } from '@/middleware/auth'
 import { activityReadRoutes, activityWriteRoutes } from '@/routes/activity'
 import { readRoutes, writeRoutes } from '@/routes/backup'
 import { blogReadRoutes, blogWriteRoutes } from '@/routes/blog'
+import { cronReadRoutes, cronWriteRoutes } from '@/routes/cron'
 
 const app = express()
 
@@ -19,11 +20,13 @@ app.get('/api/health', (_req, res) => {
 app.use('/api', sameOriginOrAuth, readRoutes)
 app.use('/api', sameOriginOrAuth, blogReadRoutes)
 app.use('/api', sameOriginOrAuth, activityReadRoutes)
+app.use('/api', sameOriginOrAuth, cronReadRoutes)
 
 // Write routes -- always require API key
 app.use('/api', authMiddleware, writeRoutes)
 app.use('/api', authMiddleware, blogWriteRoutes)
 app.use('/api', authMiddleware, activityWriteRoutes)
+app.use('/api', authMiddleware, cronWriteRoutes)
 
 // SPA fallback -- serve index.html for non-API routes so React Router works
 // Uses Ampt's readStaticFile since static assets aren't on disk in the usual way

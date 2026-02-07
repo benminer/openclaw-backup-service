@@ -2,17 +2,18 @@ import { useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { SettingsModal } from './SettingsModal'
 
-function NavLink({ to, label }: { to: string; label: string }) {
+function NavLink({ to, label, shortLabel }: { to: string; label: string; shortLabel?: string }) {
   const location = useLocation()
   const active = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to)
   return (
     <Link
       to={to}
-      className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-mono transition-colors ${
+      className={`px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-md text-[10px] sm:text-sm font-mono transition-colors ${
         active ? 'text-cyan-400 bg-cyan-500/10' : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
       }`}
     >
-      {label}
+      <span className="sm:hidden">{shortLabel || label}</span>
+      <span className="hidden sm:inline">{label}</span>
     </Link>
   )
 }
@@ -34,8 +35,9 @@ export function Layout() {
             </Link>
             <div className="flex items-center gap-1">
               <nav className="flex items-center gap-0.5 sm:gap-1">
-                <NavLink to="/" label="Dashboard" />
-                <NavLink to="/activity" label="Activity" />
+                <NavLink to="/" label="Dashboard" shortLabel="Home" />
+                <NavLink to="/activity" label="Activity" shortLabel="Feed" />
+                <NavLink to="/calendar" label="Calendar" shortLabel="Cal" />
                 <NavLink to="/blog" label="Blog" />
               </nav>
               <button
